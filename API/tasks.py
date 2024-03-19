@@ -185,6 +185,31 @@ def get_list_details(
         description="Includes arguments of task",
     ),
 ):
+    """
+    Retrieve details of tasks in the specified queue.
+    This endpoint retrieves a list of task details from the specified queue. The details include the index,
+    task ID, and optionally, the task arguments if the `args` parameter is set to True.
+    
+    Args:
+        queue_name (str): The name of the queue to retrieve task details from.
+        args (bool, optional): If True, includes the task arguments in the response. Defaults to False.
+
+    Returns:
+        A JSON response containing a list of dictionaries, where each dictionary represents a task and
+        contains the following keys:
+            - index (int): The index of the task in the queue.
+            - id (str): The ID of the task.
+            - args (str, optional): The arguments of the task, if `args` is True.
+
+    Raises:
+        HTTPException: If the specified `queue_name` is not found.
+        
+    Example response (with `args=False`):
+    [
+        {"index": 0, "id": "abcd1234-efgh-5678-ijkl-mnopqrstuvwx"},
+        {"index": 1, "id": "zyxw9876-vuts-5432-rqpo-nmlkjihgfedcba"},
+    ]
+    """
     if queue_name not in queues:
         raise HTTPException(status_code=404, detail=f"Queue '{queue_name}' not found")
     redis_client = redis.StrictRedis.from_url(CELERY_BROKER_URL)
