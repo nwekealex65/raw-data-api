@@ -20,6 +20,11 @@ def login_url(request: Request):
     Returns:
     - login_url (dict) - URL to authorize user to the application via. Openstreetmap
         OAuth2 with client_id, redirect_uri, and permission scope as query_string parameters
+
+    Example response:
+    {
+        "login_url": "https://www.openstreetmap.org/oauth2/authorize?client_id=...&redirect_uri=...&scope=..."
+    }
     """
     login_url = osm_auth.login()
     return login_url
@@ -36,6 +41,9 @@ def callback(request: Request):
 
     Returns:
     - access_token (string)
+
+    Example response:
+    "abcdef0123456789"
     """
     access_token = osm_auth.callback(str(request.url))
 
@@ -54,6 +62,13 @@ def my_data(user_data: AuthUser = Depends(login_required)):
                 ADMIN = 1
                 STAFF = 2
                 GUEST = 3
+
+    Example response:
+    {
+        "osm_id": 123456,
+        "display_name": "John Doe",
+        "role": 2
+    }
     """
     return user_data
 
@@ -79,6 +94,11 @@ async def create_user(params: User, user_data: AuthUser = Depends(admin_required
     Returns:
     - Dict[str, Any]: A dictionary containing the osm_id of the newly created user.
 
+    Example response:
+    {
+        "osm_id": 123456
+    }
+
     Raises:
     - HTTPException: If the user creation fails.
     """
@@ -101,6 +121,12 @@ async def read_user(osm_id: int, user_data: AuthUser = Depends(staff_required)):
 
     Returns:
     - Dict[str, Any]: A dictionary containing user information.
+
+    Example response:
+    {
+        "osm_id": 654321,
+        "role": 2
+    }
 
     Raises:
     - HTTPException: If the user with the given osm_id is not found.
@@ -128,6 +154,18 @@ async def update_user(
     Returns:
     - Dict[str, Any]: A dictionary containing the updated user information.
 
+    Example request body:
+    {
+        "osm_id": 123456,
+        "role": 1
+    }
+
+    Example response:
+    {
+        "osm_id": 123456,
+        "role": 1
+    }
+
     Raises:
     - HTTPException: If the user with the given osm_id is not found.
     """
@@ -143,6 +181,11 @@ async def delete_user(osm_id: int, user_data: AuthUser = Depends(admin_required)
 
     Args:
     - osm_id (int): The OSM ID of the user to delete.
+
+    Example response:
+    {
+        "osm_id": 123456,
+    }
 
     Returns:
     - Dict[str, Any]: A dictionary containing the deleted user information.
@@ -168,6 +211,18 @@ async def read_users(
 
     Returns:
     - List[Dict[str, Any]]: A list of dictionaries containing user information.
+
+    Example response:
+    [
+        {
+            "osm_id": 123456,
+            "role": 1
+        },
+        {
+            "osm_id": 654321,
+            "role": 2
+        },
+    ]
     """
     auth = Users()
     return auth.read_users(skip, limit)
