@@ -46,11 +46,11 @@ async def get_polygon_stats(
         },
     ),
 ):
-    """Get statistics for the specified polygon.
+    """Get statistics for the specified polygon. Retrieves summary and raw statistics related to a specified polygon
 
     Args:
         request (Request): An HTTP request object.
-        params (StatsRequestParams): Parameters for the statistics request, including the polygon geometry.
+        params (StatsRequestParams): Parameters for the statistics request, including the polygon geometry or ISO3 country code.
 
     Returns:
         dict: A dictionary containing statistics for the specified polygon.
