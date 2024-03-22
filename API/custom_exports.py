@@ -789,14 +789,17 @@ async def process_custom_requests(
     ),
 ):
     """
-    Process data based on dynamic categories, Fully flexible on filtering and select
+    Process data based on dynamic categories, Fully flexible on filtering and selection.
 
     Args:
-        request: FastAPI Request object.
+        request (Request): FastAPI Request object.
         params (DynamicCategoriesModel): Input parameters including ISO3 country code and dynamic categories.
 
     Returns:
-        dict: Result message.
+        dict: Dictionary containing the result message and task information.
+
+    Raises:
+        HTTPException: Raised when there are insufficient permissions or empty categories.
     """
     queue_name = params.queue
     if params.queue != DEFAULT_QUEUE_NAME and user.role != UserRole.ADMIN.value:
