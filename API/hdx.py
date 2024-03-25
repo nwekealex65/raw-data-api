@@ -22,7 +22,7 @@ async def create_hdx(
     request: Request, hdx_data: dict, user_data: AuthUser = Depends(staff_required)
 ):
     """
-    Create a new HDX entry.
+    Creates a new HDX entry.
 
     Args:
         request (Request): The request object.
@@ -30,7 +30,7 @@ async def create_hdx(
         user_data (AuthUser): User authentication data.
 
     Returns:
-        dict: Result of the HDX creation process.
+        dict: A dictionary containing information about the newly created HDX entry.
     """
     hdx_instance = HDX()
     return hdx_instance.create_hdx(hdx_data)
@@ -49,11 +49,13 @@ async def read_hdx_list(
 
     Args:
         request (Request): The request object.
-        skip (int): Number of entries to skip.
-        limit (int): Maximum number of entries to retrieve.
+        skip (int): Number of entries to skip. Defaults to 0.
+        limit (int): Maximum number of entries to retrieve. Defaults to 10.
 
     Returns:
         List[dict]: List of HDX entries.
+    Raises:
+        HTTPException: If there is an error retrieving the HDX list
     """
     hdx_instance = HDX()
     filters = {}
@@ -87,8 +89,8 @@ async def search_hdx(
     Args:
         request (Request): The request object.
         dataset_title (str): The title of the dataset to search for.
-        skip (int): Number of entries to skip.
-        limit (int): Maximum number of entries to retrieve.
+        skip (int): Number of entries to skip. Defaults 0.
+        limit (int): Maximum number of entries to retrieve. Defaults to 0.
 
     Returns:
         List[dict]: List of HDX entries matching the dataset title.
