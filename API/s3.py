@@ -42,6 +42,20 @@ async def list_s3_files(
         default=False, description="Display size & date in human-readable format"
     ),
 ):
+    """
+    List files in a specified folder in the S3 bucket.
+    
+    Args:
+        request (Request): FastAPI request object.
+        folder (str): The folder path in the S3 bucket. Default is '/HDX'.
+        prettify (bool): Flag to indicate if size and date should be displayed in human-readable format. Default is False.
+    
+    Returns:
+        StreamingResponse: JSON response containing the list of files in the specified S3 folder.
+            
+    Raises:
+        HTTPException: If AWS credentials are not available.
+    """
     bucket_name = BUCKET_NAME
     folder = folder.strip("/")
     prefix = f"{folder}/"
@@ -84,7 +98,16 @@ async def list_s3_files(
 
 
 async def check_object_existence(bucket_name, file_path):
-    """Async function to check object existence"""
+    """
+    Async function to check the existence of an object in an S3 bucket.
+    
+    Args:
+        bucket_name (str): Name of the S3 bucket.
+        file_path (str): The path to the file or folder in S3.
+    
+    Raises:
+        HTTPException: If AWS credentials are not available or if the file or folder is not found.
+    """
     try:
         s3.head_object(Bucket=bucket_name, Key=file_path)
     except NoCredentialsError:
@@ -96,7 +119,16 @@ async def check_object_existence(bucket_name, file_path):
 
 
 async def read_meta_json(bucket_name, file_path):
-    """Async function to read from meta json"""
+    """
+    Async function to read from the meta json.
+    
+    Args:
+        bucket_name (str): Name of the S3 bucket.
+        file_path (str): The path to the file or folder in S3.
+    
+    Raises:
+        HTTPException: If AWS credentials are not available or if the file or folder is not found.
+    """
     try:
         response = s3.get_object(Bucket=bucket_name, Key=file_path)
         content = json.loads(response["Body"].read())
@@ -114,6 +146,19 @@ async def head_s3_file(
     request: Request,
     file_path: str = Path(..., description="The path to the file or folder in S3"),
 ):
+    """
+    Retrieve metadata of a file or folder in S3.
+    
+    Args:
+        request (Request): FastAPI request object.
+        file_path (str): The path to the file or folder in S3.
+    
+    Returns:
+        Response: Response object containing metadata headers.
+            
+    Raises:
+        HTTPException: If the file or folder is not found or if there is an AWS error.
+    """
     bucket_name = BUCKET_NAME
     encoded_file_path = quote(file_path.strip("/"))
     try:
@@ -151,6 +196,22 @@ async def get_s3_file(
         description="Whether to read and deliver the content of .json file",
     ),
 ):
+    """
+    Retrieve a file from S3 using a presigned URL or read the content of a JSON file.
+    
+    Args:
+        request (Request): FastAPI request object.
+        file_path (str): The path to the file or folder in S3.
+        expiry (int): Expiry time for the presigned URL in seconds (default: 1 hour). Must be between 10 minutes and 1 week.
+        read_meta (bool): Whether to read and deliver the content of .json file. Default is True.
+    
+    Returns:
+        RedirectResponse: Redirects to the presigned URL if read_meta is False, otherwise returns JSON response with file content.
+            
+    Raises:
+        HTTPException: If the file or folder is not found or if there is an AWS error.
+    """
+
     bucket_name = BUCKET_NAME
     file_path = file_path.strip("/")
     encoded_file_path = quote(file_path)
